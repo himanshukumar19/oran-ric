@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C libraries temporarily copied for inspection
+libe2ap.so
+libe2ap_wrapper.so
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.xdv
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Environment variables with local settings (keep .env.example if needed)
+# .env is tracked in this repo for SC RIC defaults
