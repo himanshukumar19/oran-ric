@@ -72,7 +72,11 @@ class E2AgentSimulator:
         self.rmr_port = rmr_port
         self.node_id = node_id
         self.running = True
-        self.active_subscriptions = {}
+        self.active_subscriptions = {
+            1: {'metrics': ['DRB.UEThpDl', 'DRB.UEThpUl'], 'style': 1},
+            2: {'metrics': ['DRB.UEThpDl', 'DRB.UEThpUl', 'DRB.RlcSduTransmittedVolumeDL', 'DRB.RlcSduTransmittedVolumeUL', 'CQI', 'RRU.PrbTotDl'], 'style': 1},
+            3: {'metrics': ['DRB.UEThpDl', 'DRB.UEThpUl'], 'style': 5, 'ue_ids': [0, 1]}
+        }
         self.packer = e2sm_kpm_packer()
 
         # Load ASN1 C library wrappers

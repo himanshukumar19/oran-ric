@@ -42,6 +42,7 @@ class xAppBase(object):
         self.e2sm_rc = e2sm_rc_module(self)
         # dict to store active subscriptions
         self.my_subscriptions = {}
+        self.sub_id_to_e2_id = {}
 
         # helper variables
         self.running = False
@@ -85,6 +86,7 @@ class xAppBase(object):
         SubscriptionId = data['SubscriptionId']
         E2EventInstanceId = data['SubscriptionInstances'][0]["E2EventInstanceId"]  # subscription ID used in RIC indication
         print("Received Subscription ID to E2EventInstanceId mapping: {} -> {}".format(SubscriptionId, E2EventInstanceId))
+        self.sub_id_to_e2_id[SubscriptionId] = E2EventInstanceId
         if SubscriptionId in self.my_subscriptions:
             self.my_subscriptions[SubscriptionId].e2_event_instance_id = E2EventInstanceId
             # update the key, as it is more convenient to use E2EventInstanceId that is used in RIC indication msgs
@@ -119,8 +121,14 @@ class xAppBase(object):
         subscriptionObj.e2sm_type = e2sm_type
         subscriptionObj.subscription_id = subscription_id
         subscriptionObj.callback_func = indication_callback
-        # Store active subscription in the dict
-        self.my_subscriptions[subscription_id] = subscriptionObj
+        
+        # Check if callback already arrived before subscribe returned
+        e2_instance_id = self.sub_id_to_e2_id.get(subscription_id, None)
+        if e2_instance_id is not None:
+            subscriptionObj.e2_event_instance_id = e2_instance_id
+            self.my_subscriptions[e2_instance_id] = subscriptionObj
+        else:
+            self.my_subscriptions[subscription_id] = subscriptionObj
 
     def unsubscribe(self, subscription_id):
         print("Unsubscribe Subscription ID: ", subscription_id)
