@@ -90,6 +90,18 @@ class ModifiedMonXapp(xAppBase):
         )
 
 
+def get_available_port(preferred_port=8095):
+    import socket
+    for p in range(preferred_port, preferred_port + 50):
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(('0.0.0.0', p))
+                return p
+        except OSError:
+            continue
+    return preferred_port
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Modified Monitoring xApp with Extended Metrics')
     parser.add_argument("--config", type=str, default='', help="xApp config file path")
@@ -107,8 +119,11 @@ if __name__ == '__main__':
     ran_func_id = args.ran_func_id
     metrics = args.metrics.split(",")
 
+    # Automatically resolve port conflicts
+    server_port = get_available_port(args.http_server_port)
+
     # Create Modified xApp
-    myXapp = ModifiedMonXapp(config, args.http_server_port, args.rmr_port)
+    myXapp = ModifiedMonXapp(config, server_port, args.rmr_port)
     myXapp.e2sm_kpm.set_ran_func_id(ran_func_id)
 
     # Connect exit signals
